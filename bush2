@@ -1,0 +1,62 @@
+#!/bin/bash
+
+if [ $# -lt 3 ]
+  then
+    echo "Not enough arguments!"
+        echo "Enter path to the file"
+    read file
+        echo "Enter string to replace"
+    read str1
+        echo "Enter replacement"
+    read str2
+    
+else
+file=$1
+str1=$2
+str2=$3
+fi
+
+echo "The file:"
+echo $file
+echo "The string to replace:"
+echo $str1
+echo "The replacement:"
+echo $str2
+
+if [ -f "$file" ]
+then
+echo "$file is a file"
+else
+echo "$file is not a file"
+exit
+fi
+
+echo "..."
+
+if  [[  -n $str1 &&  -n $str2 ]]
+then
+echo "loading..."
+else
+echo "String(s) is(are) empty"
+exit
+fi
+
+sed -i -e "s/$str1/$str2/g" $file
+rm "$file-e"
+
+if [ -f "files.log" ]
+then
+echo "We have files.log"
+else
+echo "We do not have files.log"
+exit
+fi
+
+
+filesize=$(stat -f %z $file)
+filedata=$(date +"%Y-%m-%d %H:%M")
+sha256=$(shasum -a 256 $file| awk '{print $1}')
+
+echo "src/$file - $filesize - $filedata - $sha256 - sha256" >> files.log
+
+echo "Logs added in the files.log"
